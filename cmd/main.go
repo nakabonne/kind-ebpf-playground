@@ -24,28 +24,9 @@ func main() {
 		log.Fatalf("failed to load spec: %v", err)
 	}
 
-	// Create collection with proper options for containers
-	opts := ebpf.CollectionOptions{
-		Programs: ebpf.ProgramOptions{
-			KernelTypes: nil, // Let the library detect kernel types
-		},
-	}
-
-	coll, err := ebpf.NewCollectionWithOptions(spec, opts)
+	coll, err := ebpf.NewCollection(spec)
 	if err != nil {
-		// If that fails, try without kernel version detection
-		log.Printf("Initial load failed: %v, trying without kernel version detection...", err)
-		
-		// Disable kernel version detection by setting a specific kernel version
-		for name, progSpec := range spec.Programs {
-			progSpec.KernelVersion = 0 // Disable kernel version requirement
-			log.Printf("Disabled kernel version check for program: %s", name)
-		}
-		
-		coll, err = ebpf.NewCollectionWithOptions(spec, opts)
-		if err != nil {
-			log.Fatalf("failed to load collection even without kernel version: %v", err)
-		}
+		log.Fatalf("failed to load collection: %v", err)
 	}
 	defer coll.Close()
 
