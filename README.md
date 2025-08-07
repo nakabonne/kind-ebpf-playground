@@ -16,10 +16,31 @@ kind create cluster --name ebpf-sample
 kubectl get nodes
 ```
 
-## Build the docker image
+## Build and load the docker image
+
+Build for x86_64 (required for eBPF in kind):
 
 ```
-docker build -t ebpf-sample .
+docker buildx build --platform=linux/amd64 --load -t ebpf-sample .
+```
+
+Load the image into kind cluster:
+
+```
+kind load docker-image ebpf-sample --name ebpf-sample
+```
+
+Deploy the eBPF pod:
+
+```
+kubectl apply -f k8s/deploy.yaml
+```
+
+Check the pod status:
+
+```
+kubectl get pods
+kubectl logs pod/ebpf-sample
 ```
 
 ## Delete the cluster

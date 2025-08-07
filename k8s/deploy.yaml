@@ -2,18 +2,31 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: ebpf-sample
+  labels:
+    app: ebpf-sample
 spec:
   hostPID: true
+  hostNetwork: true
   containers:
-  - name: ebpf
-    image: ebpf-sample
+  - name: ebpf-sample
+    image: ebpf-sample:latest
+    imagePullPolicy: Never
     securityContext:
       privileged: true
     volumeMounts:
-      - name: bpffs
-        mountPath: /sys/fs/bpf
-  volumes:
+    - name: debugfs
+      mountPath: /sys/kernel/debug
+    - name: tracefs
+      mountPath: /sys/kernel/debug/tracing
     - name: bpffs
-      hostPath:
-        path: /sys/fs/bpf
-        type: Directory
+      mountPath: /sys/fs/bpf
+  volumes:
+  - name: debugfs
+    hostPath:
+      path: /sys/kernel/debug
+  - name: tracefs  
+    hostPath:
+      path: /sys/kernel/debug/tracing
+  - name: bpffs
+    hostPath:
+      path: /sys/fs/bpf
