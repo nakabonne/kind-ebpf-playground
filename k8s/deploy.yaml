@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ebpf-sample
+spec:
+  hostPID: true
+  containers:
+  - name: ebpf
+    image: ebpf-sample
+    securityContext:
+      privileged: true
+    volumeMounts:
+      - name: bpffs
+        mountPath: /sys/fs/bpf
+  volumes:
+    - name: bpffs
+      hostPath:
+        path: /sys/fs/bpf
+        type: Directory
